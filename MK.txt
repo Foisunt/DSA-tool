@@ -1,0 +1,5 @@
+Elanor 0 0 0 0
+Bell 15 14 14 0
+Heleanora 14 14 14 6
+Iridias 0 0 0 0
+Amaryd 0 0 0 0
