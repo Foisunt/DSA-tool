@@ -5,9 +5,31 @@ Created on Sun Jan 13 22:05:38 2019
 @author: Nicolas
 """
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+helpString={
+        'menu':'\n Menü, h: Hilfe, c: Ende',
+        'help':"Hilfe: \n t: Talentwurf WiP \n tl: ^ loop \n tw: W'keit Talentwurf zu schaffen \n twl: ^ loop \n twp: Plottet TW/TaW \n mk: Menschenk \n sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy",
+        'initMK':'sind diese Menschenk Werte (E1 E2 E3 TaW) richtig (j/n)',
+        'initSN':'sind diese Sinnensch Werte (E1 E2 E3 TaW) richtig (j/n)',
+        'xdy':'konnte nicht als xdy interpretiert werden, h: Hilfe'
+        }
+
+needsInput={
+        't':'E1 E2 E3 TaW+Mod opt:wdh',
+        'tw':'E1 E2 E3 TaW+Mod',
+        'twp':'E1 E2 E3 startTaW',
+        'mk':'Erschwernis (keine: 0, >0 -> Erschwernis, <0 -> Erleichterung)',
+        'sn':'Erschwernis (keine: 0, >0 -> Erschwernis, <0 -> Erleichterung)'
+        }
 
 #takes 'xdy' as string
-def xdy(s):
+def xdy(args):
+    s=args[0]
+    if 'd' not in s or len(args)>1: 
+        print(args,helpString['xdy'])
+        return True 
     try:
         dInd=s.find('d')
         x=int(s[:dInd])
@@ -15,28 +37,36 @@ def xdy(s):
         w=np.random.randint(1,y+1, size=x)
         print(w, ' Summe=', sum(w))
     except ValueError:
-        print(s,' konnte nicht als xdy interpretiert werden, h: Hilfe')
+        print(s,helpString['xdy'])
     return True
 
-def maxErsch(E, W, taw):
-    if taw<0:
-        diff=[E[i]-W[i]+taw for i in range(len(E))]
-        if min(diff)>=0: return min(diff)
-        else: return np.inf #todo
-    else:
-        diff=[E[i]-W[i] for i in range(len(E))]
-        if min(diff)>=0: return min(diff)+taw
-        else:
-            diff=[min(0,diff[i]) for i in range(len(diff))]
-            return sum(diff)+taw
+def T(args):
+    args=[int(x) for x in args[1:]]
+    wdh=1
+    if len(args)==5:wdh=args[4]
+    for _ in range(wdh): throw(['', args[0], args[1], args[2], args[3]], 0)
+    return True
+
+def TL(_):
+    while True:
+        print('E1 E2 E3 TaW+Mod opt:wdh')
+        s=input()
+        try:
+            args=[int(x) for x in s.split()]
+            wdh=1
+            if len(args)==5:wdh=args[4]
+            for _ in range(wdh): throw(['', args[0], args[1], args[2], args[3]], 0)
+        except ValueError:
+            break
+    return True
 
 #einzelner Vergleich, return: bool
 def vgl(e1, e2, e3, w1, w2, w3, taw):
     if(taw<=0):
-        er1=e1-w1
-        er2=e2-w2
-        er3=e3-w3
-        return (min(er1, er2, er3)+taw)>=0
+        er1=e1-w1+taw
+        er2=e2-w2+taw
+        er3=e3-w3+taw
+        return min(er1, er2, er3)>=0
     ag1=max(0,w1-e1)
     ag2=max(0,w2-e2)
     ag3=max(0,w3-e3)
@@ -54,11 +84,9 @@ def Wkeit(l):
     return count/(20**3)
 
 #Talent W'keit ohne loop
-def TW(_):
-    print('E1 E2 E3 TaW+Mod')
-    s=input()
+def TW(args):
     try:
-        l=[int(x) for x in s.split()]
+        l=[int(x) for x in args[1:]]
         print(Wkeit(l), '\n')
     except ValueError:
         return True
@@ -76,68 +104,91 @@ def TWL(_):
             break
     return True
 
+#plottet tw gegen TaW, funktioniert nicht im normalen cmd
+def TWP(args):
+    E=[int(x) for x in args[1:5]]
+    x=[]
+    y=[]
+    while True:
+        x.append(E[3])
+        y.append(Wkeit(E))
+        if y[len(y)-1] > 0.99 : break
+        E[3]=E[3]+1
+    print(x,'\n',y)
+    plt.scatter(x,y)
+    plt.show()
+    return True
+
 # makes a throw for everyone in 
-def useRead(index):
+def useRead(index, modS):
     if txtRead[index][0]:
-        print('Erschwernis (keine: 0, >0 -> Erschwernis, <0 -> Erleichterung)')
         try:
-            mod=int(input())
-            print('Name geschafft? W1 W2 W3')
+            mod=int(modS)
+            print('geschafft? W1 W2 W3 Name')
         except ValueError:
-            print('Das war keine ganze Zahl')
+            print('Das war keine ganze Zahl, -> mod=0')
+            print('geschafft? W1 W2 W3 Name')
+            mod=0
         for line in txtRead[index][1]:
             throw(line, mod)
     else:
         print('update the .txt')
 
 # can be used for any talent, given a split line from the txt files
-def throw(line, mod=0):
+def throw(line, mod):
     p=''
     k=''
     w=np.random.randint(1,21, size=3)
     if 1 in w: k='Krit?'
     if 20 in w: p='Patzer?'
     erg=vgl(int(line[1]), int(line[2]), int(line[3]), w[0], w[1], w[2], int(line[4])-mod)
-    print(line[0], erg, w, p, k)
+    print(p, k, erg, w, line[0])
 
-def Mk(_):
-    useRead(0)
+def Mk(args):
+    useRead(0, args[1])
     return True
 
-def Sn(_):
-    useRead(1)
+def Sn(args):
+    useRead(1, args[1])
     return True
 
 def end(_): return False
 
 def he(_):
-    print("Hilfe: \n t: Talentwurf \tl: ^ wiederholt \n tw: W'keit Talentwurf zu schaffen \n twl: ^ wiederholt \n Mk: Menschenk \n Sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy")
+    print(helpString['help'])
     return True
 
-def default(s):
-    xdy(s)
-    return True
-
+#gets a string, tries to get args from the user
+def getMissingArgs(s):
+    print(needsInput[s])
+    args=input()
+    args=args.split()
+    ret=[s]
+    for i in range(len(args)):
+        ret.append(args[i])
+    return ret
+    
+    
 def init():
     funDict={
-#        't':T,
-#        'tl':TL,
+        't':T,
+        'tl':TL,
         'tw':TW,
         'twl':TWL,
-        'Mk':Mk,
-        'Sn':Sn,
+        'twp':TWP,
+        'mk':Mk,
+        'sn':Sn,
         'c':end,
         'h':he}
-    
     try:
         mkData=open('MK.txt')
         mkData=mkData.readlines()
-        print('sind diese Menschenk Werte (E1 E2 E3 TaW) richtig (j/n)')
+        print(helpString['initMK'])
         print(''.join(mkData))
         mkOK=input()
         if mkOK in 'jy': 
             mkOK = True
-            mkData=[[y for y in x.split(' ')] for x in mkData[0:len(mkData)]]
+            mkData=[[y for y in x.split()] for x in mkData[0:len(mkData)]]
         else: mkOK = False
     except FileNotFoundError:
         print('\n kein MK.txt')
@@ -148,12 +199,12 @@ def init():
     try:
         snData=open('SN.txt')
         snData=snData.readlines()
-        print('sind diese Sinnensch Werte (E1 E2 E3 TaW) richtig (j/n)')
+        print(helpString['initSN'])
         print(''.join(snData))
         snOK=input()
         if snOK in 'jy': 
             snOK = True
-            snData=[[y for y in x.split(' ')] for x in snData[0:len(snData)]]
+            snData=[[y for y in x.split()] for x in snData[0:len(snData)]]
         else: snOK = False
     except FileNotFoundError:
         print('\n kein SN.txt')
@@ -162,10 +213,12 @@ def init():
         snOK=False
     return funDict, [(mkOK, mkData), (snOK, snData)]
 
-(funDict, txtRead)=init()
-sinnenData=None
+funDict, txtRead=init()
 var=True
 while var:
-    print('\n','Menü, h: Hilfe, c: Ende')
+    print(helpString['menu'])
     s=input()
-    var=funDict.get(s, default)(s)
+    args=s.split()
+    if (len(args)==1 and s in needsInput):
+        args=getMissingArgs(args[0])
+    var=funDict.get(args[0], xdy)(args)
