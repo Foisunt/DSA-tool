@@ -18,7 +18,19 @@ def xdy(s):
         print(s,' konnte nicht als xdy interpretiert werden, h: Hilfe')
     return True
 
-#einzelner Vergleich
+def maxErsch(E, W, taw):
+    if taw<0:
+        diff=[E[i]-W[i]+taw for i in range(len(E))]
+        if min(diff)>=0: return min(diff)
+        else: return np.inf #todo
+    else:
+        diff=[E[i]-W[i] for i in range(len(E))]
+        if min(diff)>=0: return min(diff)+taw
+        else:
+            diff=[min(0,diff[i]) for i in range(len(diff))]
+            return sum(diff)+taw
+
+#einzelner Vergleich, return: bool
 def vgl(e1, e2, e3, w1, w2, w3, taw):
     if(taw<=0):
         er1=e1-w1
@@ -32,7 +44,7 @@ def vgl(e1, e2, e3, w1, w2, w3, taw):
 
 #Eigenschaften 1 2 und 3, Taw+Erleichterung-Erschwernis
 #Krit/Patzer werden nicht berücksichtigt
-def Talent(l):
+def Wkeit(l):
     [e1, e2, e3, TaW]=l
     count=0
     for x in range(1,21):
@@ -42,24 +54,24 @@ def Talent(l):
     return count/(20**3)
 
 #Talent W'keit ohne loop
-def TnL(_):
+def TW(_):
     print('E1 E2 E3 TaW+Mod')
     s=input()
     try:
         l=[int(x) for x in s.split()]
-        print(Talent(l), '\n')
+        print(Wkeit(l), '\n')
     except ValueError:
         return True
     return True
 
 #Talent W'keit mit loop
-def TLoop(_):
+def TWL(_):
     while True:
         print('E1 E2 E3 TaW+Mod')
         s=input()
         try:
             l=[int(x) for x in s.split()]
-            print(Talent(l), '\n')
+            print(Wkeit(l), '\n')
         except ValueError:
             break
     return True
@@ -99,7 +111,7 @@ def Sn(_):
 def end(_): return False
 
 def he(_):
-    print("Hilfe: \n tw: W'keit Talentwurf zu schaffen \n twl: ^ wiederholt \n Mk: Menschenk \n Sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy")
+    print("Hilfe: \n t: Talentwurf \tl: ^ wiederholt \n tw: W'keit Talentwurf zu schaffen \n twl: ^ wiederholt \n Mk: Menschenk \n Sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy")
     return True
 
 def default(s):
@@ -108,9 +120,10 @@ def default(s):
 
 def init():
     funDict={
-        'xdy':xdy,
-        'tw':TnL,
-        'twl':TLoop,
+#        't':T,
+#        'tl':TL,
+        'tw':TW,
+        'twl':TWL,
         'Mk':Mk,
         'Sn':Sn,
         'c':end,
