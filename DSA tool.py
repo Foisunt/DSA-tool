@@ -5,12 +5,16 @@ Created on Sun Jan 13 22:05:38 2019
 @author: Nicolas
 """
 import numpy as np
-import matplotlib.pyplot as plt
+doPlot=True
+try:
+    import matplotlib.pyplot as plt
+except:
+    doPlot=False
 
 
 helpString={
         'menu':'\n Menü, h: Hilfe, c: Ende',
-        'help':"Hilfe: \n t: Talentwurf WiP \n tl: ^ loop \n tw: W'keit Talentwurf zu schaffen \n twl: ^ loop \n twp: Plottet TW/TaW \n mk: Menschenk \n sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy",
+        'help':"Hilfe: \n t: Talentwurf \n tl: ^ loop \n tw: W'keit Talentwurf zu schaffen \n twl: ^ loop \n twp: Plottet TW/TaW \n mk: Menschenk \n sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy",
         'initMK':'sind diese Menschenk Werte (E1 E2 E3 TaW) richtig (j/n)',
         'initSN':'sind diese Sinnensch Werte (E1 E2 E3 TaW) richtig (j/n)',
         'xdy':'konnte nicht als xdy interpretiert werden, h: Hilfe'
@@ -114,9 +118,10 @@ def TWP(args):
         y.append(Wkeit(E))
         if y[len(y)-1] > 0.99 : break
         E[3]=E[3]+1
-    print(x,'\n',y)
-    plt.scatter(x,y)
-    plt.show()
+    if doPlot:
+        plt.scatter(x,y)
+        plt.show()
+    else : print([(x[i],y[i]) for i in range(len(x))])
     return True
 
 # makes a throw for everyone in 
