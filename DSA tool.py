@@ -14,7 +14,7 @@ except:
 
 helpString={
         'menu':'\n Menü, h: Hilfe, c: Ende',
-        'help':"Hilfe: \n t: Talentwurf \n tl: ^ loop \n tw: W'keit Talentwurf zu schaffen \n twl: ^ loop \n twp: Plottet TW/TaW \n mk: Menschenk \n sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy",
+        'help':"Hilfe: \n t: Talentwurf \n tl: ^ loop \n tw: W'keit Talentwurf zu schaffen \n twl: ^ loop \n twp: Plottet TW/TaW (nur in Python Konsole) \n mk: Menschenk \n sn: Sinnen \n c: Ende \n h: Hilfe \n sonst: xdy",
         'initMK':'sind diese Menschenk Werte (E1 E2 E3 TaW) richtig (j/n)',
         'initSN':'sind diese Sinnensch Werte (E1 E2 E3 TaW) richtig (j/n)',
         'xdy':'konnte nicht als xdy interpretiert werden, h: Hilfe'
@@ -91,7 +91,7 @@ def Wkeit(l):
 def TW(args):
     try:
         l=[int(x) for x in args[1:]]
-        print(Wkeit(l), '\n')
+        print(Wkeit(l))
     except ValueError:
         return True
     return True
@@ -147,7 +147,9 @@ def throw(line, mod):
     if 1 in w: k='Krit?'
     if 20 in w: p='Patzer?'
     erg=vgl(int(line[1]), int(line[2]), int(line[3]), w[0], w[1], w[2], int(line[4])-mod)
-    print(f'{erg:4} {line[0]:10}',w , p, k)
+    name=line[0]
+    if len(name)>0: print(f'{erg:4} {name:10}',w , p, k)
+    else: print(f'{erg:4}',w , p, k)
 
 def Mk(args):
     useRead(0, args[1])
