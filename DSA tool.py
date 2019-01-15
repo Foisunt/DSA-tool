@@ -129,10 +129,10 @@ def useRead(index, modS):
     if txtRead[index][0]:
         try:
             mod=int(modS)
-            print('geschafft? W1 W2 W3 Name')
+            print('Erg  Name  W1 W2 W3')
         except ValueError:
             print('Das war keine ganze Zahl, -> mod=0')
-            print('geschafft? W1 W2 W3 Name')
+            print('Erg  Name  W1 W2 W3')
             mod=0
         for line in txtRead[index][1]:
             throw(line, mod)
@@ -147,7 +147,7 @@ def throw(line, mod):
     if 1 in w: k='Krit?'
     if 20 in w: p='Patzer?'
     erg=vgl(int(line[1]), int(line[2]), int(line[3]), w[0], w[1], w[2], int(line[4])-mod)
-    print(p, k, erg, w, line[0])
+    print(f'{erg:4} {line[0]:10}',w , p, k)
 
 def Mk(args):
     useRead(0, args[1])
